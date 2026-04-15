@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H3X Licensing Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.25),_transparent_32%),radial-gradient(circle_at_bottom_left,_rgba(168,85,247,0.18),_transparent_28%)]"></div>
+<div class="relative mx-auto max-w-7xl px-6 py-10">
+    <header class="flex items-center justify-between">
+        <a href="/" class="text-xl font-black tracking-[0.25em] text-cyan-300">H3X</a>
+        <nav class="flex gap-3 text-sm font-semibold">
+            <a href="/login" class="rounded-full border border-slate-700 px-4 py-2 hover:border-cyan-400 hover:text-cyan-300">Login</a>
+            <a href="/register" class="rounded-full bg-cyan-500 px-4 py-2 text-slate-950 hover:bg-cyan-400">Register</a>
+        </nav>
+    </header>
+
+    <main class="grid gap-10 py-20 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <section>
+            <p class="mb-4 inline-flex rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-1 text-sm text-cyan-200">Discord + FiveM license operations</p>
+            <h1 class="max-w-3xl text-5xl font-black leading-tight">One control panel for customer onboarding, purchase validation and FiveM script license checks.</h1>
+            <p class="mt-6 max-w-2xl text-lg text-slate-300">This panel gives your buyers a clean self-service workflow: create an account, claim a purchase, connect Discord identities and validate license keys from your scripts through a dedicated API.</p>
+            <div class="mt-8 flex flex-wrap gap-4">
+                <a href="/register" class="rounded-xl bg-cyan-500 px-6 py-3 font-bold text-slate-950 hover:bg-cyan-400">Create account</a>
+                <a href="/login" class="rounded-xl border border-slate-700 px-6 py-3 font-bold hover:border-cyan-400 hover:text-cyan-300">Sign in</a>
+            </div>
+            <div class="mt-12 grid gap-4 md:grid-cols-3">
+                <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                    <h2 class="font-bold text-cyan-300">Buyer accounts</h2>
+                    <p class="mt-2 text-sm text-slate-300">Support both direct sales and marketplace buyers with manual claim flows.</p>
+                </div>
+                <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                    <h2 class="font-bold text-cyan-300">License API</h2>
+                    <p class="mt-2 text-sm text-slate-300">Validate from Discord bots or FiveM scripts with a dedicated JSON endpoint.</p>
+                </div>
+                <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                    <h2 class="font-bold text-cyan-300">Admin control</h2>
+                    <p class="mt-2 text-sm text-slate-300">Create products, issue licenses and manage activation states from the browser.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card rounded-3xl border border-slate-800 p-8 shadow-2xl shadow-cyan-950/40">
+            <h2 class="text-2xl font-black">What is included?</h2>
+            <ul class="mt-6 space-y-4 text-sm text-slate-300">
+                <li class="rounded-2xl border border-slate-800 p-4">Secure session login with Spring Security.</li>
+                <li class="rounded-2xl border border-slate-800 p-4">Registration flow for buyers and manual account owners.</li>
+                <li class="rounded-2xl border border-slate-800 p-4">Claim purchases by email + purchase reference.</li>
+                <li class="rounded-2xl border border-slate-800 p-4">Product catalog and license creation for administrators.</li>
+                <li class="rounded-2xl border border-slate-800 p-4">REST API for Discord/FiveM validation requests.</li>
+            </ul>
+        </section>
+    </main>
+</div>
+</body>
+</html>
+

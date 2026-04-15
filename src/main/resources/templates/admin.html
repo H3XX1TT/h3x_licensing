@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin · H3X Licensing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+<div class="mx-auto max-w-7xl px-6 py-8">
+    <header class="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 md:flex-row md:items-center md:justify-between">
+        <div>
+            <p class="text-sm text-slate-400">Administrator control panel</p>
+            <h1 class="text-3xl font-black">License operations</h1>
+        </div>
+        <div class="flex gap-3">
+            <a href="/dashboard" class="rounded-2xl border border-cyan-400 px-4 py-2 text-sm font-bold text-cyan-300">Buyer dashboard</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm font-bold hover:border-rose-400 hover:text-rose-300">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div th:if="${successMessage}" class="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="mt-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200" th:text="${errorMessage}"></div>
+
+    <div class="mt-6 grid gap-6 xl:grid-cols-[0.75fr_1.25fr]">
+        <section class="space-y-6">
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <h2 class="text-xl font-black">Create product</h2>
+                <form th:action="@{/admin/products}" th:object="${productForm}" method="post" class="mt-4 space-y-4">
+                    <input th:field="*{name}" type="text" placeholder="Product name" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <input th:field="*{slug}" type="text" placeholder="product-slug" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <textarea th:field="*{description}" rows="4" placeholder="Describe what this script does." class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400"></textarea>
+                    <button type="submit" class="rounded-2xl bg-cyan-500 px-4 py-3 font-bold text-slate-950 hover:bg-cyan-400">Create product</button>
+                </form>
+            </div>
+
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <h2 class="text-xl font-black">Create license</h2>
+                <form th:action="@{/admin/licenses}" th:object="${createLicenseForm}" method="post" class="mt-4 space-y-4">
+                    <select th:field="*{productId}" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                        <option value="">Select product</option>
+                        <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}"></option>
+                    </select>
+                    <input th:field="*{buyerName}" type="text" placeholder="Buyer name" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <input th:field="*{buyerEmail}" type="email" placeholder="buyer@email.tld" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <input th:field="*{purchaseReference}" type="text" placeholder="Purchase reference" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <select th:field="*{source}" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                            <option th:each="source : ${licenseSources}" th:value="${source}" th:text="${source}"></option>
+                        </select>
+                        <select th:field="*{status}" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                            <option th:each="status : ${licenseStatuses}" th:value="${status}" th:text="${status}"></option>
+                        </select>
+                    </div>
+                    <input th:field="*{discordId}" type="text" placeholder="Discord ID (optional)" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <input th:field="*{fivemServerId}" type="text" placeholder="FiveM server ID (optional)" class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                    <button type="submit" class="rounded-2xl bg-cyan-500 px-4 py-3 font-bold text-slate-950 hover:bg-cyan-400">Create license</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="space-y-6">
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                    <p class="text-sm text-slate-400">Products</p>
+                    <p class="mt-2 text-3xl font-black" th:text="${#lists.size(products)}">0</p>
+                </div>
+                <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                    <p class="text-sm text-slate-400">Licenses</p>
+                    <p class="mt-2 text-3xl font-black" th:text="${#lists.size(licenses)}">0</p>
+                </div>
+                <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                    <p class="text-sm text-slate-400">Users</p>
+                    <p class="mt-2 text-3xl font-black" th:text="${usersCount}">0</p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <h2 class="text-xl font-black">Catalog</h2>
+                <div class="mt-4 overflow-hidden rounded-3xl border border-slate-800">
+                    <table class="min-w-full divide-y divide-slate-800 text-sm">
+                        <thead class="bg-slate-900/80 text-slate-300">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Product</th>
+                            <th class="px-4 py-3 text-left">Slug</th>
+                            <th class="px-4 py-3 text-left">State</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 bg-slate-900/50">
+                        <tr th:each="product : ${products}">
+                            <td class="px-4 py-3" th:text="${product.name}"></td>
+                            <td class="px-4 py-3 font-mono text-xs" th:text="${product.slug}"></td>
+                            <td class="px-4 py-3" th:text="${product.active ? 'ACTIVE' : 'INACTIVE'}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl border border-slate-800 p-6">
+                <h2 class="text-xl font-black">Licenses</h2>
+                <div class="mt-4 space-y-4">
+                    <article th:each="license : ${licenses}" class="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                            <div>
+                                <h3 class="text-lg font-black" th:text="${license.product.name + ' · ' + license.buyerName}">License</h3>
+                                <p class="mt-1 text-sm text-slate-400" th:text="${license.buyerEmail + ' · ' + license.purchaseReference}"></p>
+                                <p class="mt-2 font-mono text-xs text-slate-400 break-all" th:text="${license.licenseKey}"></p>
+                            </div>
+                            <form th:action="@{'/admin/licenses/' + ${license.id} + '/status'}" method="post" class="flex flex-wrap items-center gap-3">
+                                <select name="status" class="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm focus:border-cyan-400">
+                                    <option th:each="status : ${licenseStatuses}" th:selected="${status == license.status}" th:value="${status}" th:text="${status}"></option>
+                                </select>
+                                <button type="submit" class="rounded-2xl border border-cyan-400 px-4 py-2 text-sm font-bold text-cyan-300">Update</button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
+

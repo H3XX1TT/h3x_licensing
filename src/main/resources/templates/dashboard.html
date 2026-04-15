@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · H3X Licensing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+<div class="mx-auto max-w-7xl px-6 py-8">
+    <header class="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl shadow-cyan-950/20 md:flex-row md:items-center md:justify-between">
+        <div>
+            <p class="text-sm text-slate-400">Buyer dashboard</p>
+            <h1 class="text-3xl font-black">Welcome, <span th:text="${currentUser.displayName}">User</span></h1>
+            <p class="mt-1 text-sm text-slate-300" th:text="${currentUser.email}"></p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="/admin" class="rounded-2xl border border-cyan-400 px-4 py-2 text-sm font-bold text-cyan-300">Admin panel</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm font-bold hover:border-rose-400 hover:text-rose-300">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <section class="glass-card rounded-3xl border border-slate-800 p-6">
+            <h2 class="text-xl font-black">Claim an existing purchase</h2>
+            <p class="mt-2 text-sm text-slate-300">Use the same email address that was used during checkout and your purchase reference.</p>
+
+            <div th:if="${successMessage}" class="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="mt-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/dashboard/licenses/claim}" th:object="${claimLicenseForm}" method="post" class="mt-6 space-y-4">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Buyer email</label>
+                    <input th:field="*{buyerEmail}" type="email" required class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">Purchase reference</label>
+                    <input th:field="*{purchaseReference}" type="text" required class="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 focus:border-cyan-400">
+                </div>
+                <button type="submit" class="rounded-2xl bg-cyan-500 px-4 py-3 font-bold text-slate-950 hover:bg-cyan-400">Claim license</button>
+            </form>
+
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p class="text-sm text-slate-400">Products in system</p>
+                    <p class="mt-2 text-3xl font-black" th:text="${productCount}">0</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p class="text-sm text-slate-400">Total licenses</p>
+                    <p class="mt-2 text-3xl font-black" th:text="${licenseCount}">0</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card rounded-3xl border border-slate-800 p-6">
+            <h2 class="text-xl font-black">My licenses</h2>
+            <p class="mt-2 text-sm text-slate-300">These are the products that are currently connected to your account.</p>
+
+            <div th:if="${#lists.isEmpty(ownedLicenses)}" class="mt-6 rounded-2xl border border-dashed border-slate-700 p-6 text-sm text-slate-400">
+                No licenses are linked yet. Claim a purchase to assign it to this account.
+            </div>
+
+            <div class="mt-6 space-y-4" th:if="${!#lists.isEmpty(ownedLicenses)}">
+                <article th:each="license : ${ownedLicenses}" class="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                    <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                            <h3 class="text-lg font-black" th:text="${license.product.name}">Product</h3>
+                            <p class="mt-1 text-sm text-slate-400" th:text="${license.product.slug}">slug</p>
+                        </div>
+                        <span class="status-pill bg-emerald-500/15 text-emerald-300" th:text="${license.status}">ACTIVE</span>
+                    </div>
+                    <dl class="mt-4 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-slate-500">License key</dt>
+                            <dd class="font-mono text-xs break-all" th:text="${license.licenseKey}"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-slate-500">Purchase reference</dt>
+                            <dd th:text="${license.purchaseReference}"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-slate-500">Discord ID</dt>
+                            <dd th:text="${license.discordId != null ? license.discordId : 'Not linked yet'}"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-slate-500">FiveM server ID</dt>
+                            <dd th:text="${license.fivemServerId != null ? license.fivemServerId : 'Not linked yet'}"></dd>
+                        </div>
+                    </dl>
+                </article>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
+
+

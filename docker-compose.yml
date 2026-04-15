@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: h3x_licensing
+      MARIADB_USER: ${DB_USERNAME:-h3x}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-change-me-now}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root-change-me-now}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mariadb://mariadb:3306/h3x_licensing
+      DB_USERNAME: ${DB_USERNAME:-h3x}
+      DB_PASSWORD: ${DB_PASSWORD:-change-me-now}
+      APP_VALIDATION_API_KEY: ${APP_VALIDATION_API_KEY:-change-this-long-random-key}
+      APP_REGISTRATION_ENABLED: ${APP_REGISTRATION_ENABLED:-false}
+      APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-https://localhost}
+      APP_MAIL_ENABLED: ${APP_MAIL_ENABLED:-false}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-noreply@example.local}
+      APP_SUPPORT_MAIL: ${APP_SUPPORT_MAIL:-support@example.local}
+      MAIL_HOST: ${MAIL_HOST:-localhost}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  mariadb_data:
+
